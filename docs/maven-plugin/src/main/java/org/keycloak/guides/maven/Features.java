@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 public class Features {
 
-    private final List<Feature> features;
+    private List<Feature> features;
 
     public Features() {
         this.features = Arrays.stream(Profile.Feature.values())
                 .filter(f -> !f.getType().equals(Profile.Feature.Type.EXPERIMENTAL))
-                .map(Feature::new)
+                .map(f -> new Feature(f))
                 .sorted(Comparator.comparing(Feature::getName))
                 .collect(Collectors.toList());
     }
@@ -35,17 +35,9 @@ public class Features {
         return features.stream().filter(f -> f.getType().equals(Profile.Feature.Type.PREVIEW)).collect(Collectors.toList());
     }
 
-    public List<Feature> getUpdatePolicyShutdown() {
-        return features.stream().filter(f -> f.profileFeature.getUpdatePolicy() == Profile.FeatureUpdatePolicy.SHUTDOWN).collect(Collectors.toList());
-    }
+    public class Feature {
 
-    public List<Feature> getUpdatePolicyRollingNoUpgrade() {
-        return features.stream().filter(f -> f.profileFeature.getUpdatePolicy() == Profile.FeatureUpdatePolicy.ROLLING_NO_UPGRADE).collect(Collectors.toList());
-    }
-
-    public static class Feature {
-
-        private final Profile.Feature profileFeature;
+        private Profile.Feature profileFeature;
 
         public Feature(Profile.Feature profileFeature) {
             this.profileFeature = profileFeature;
@@ -63,12 +55,10 @@ public class Features {
             return profileFeature.getVersionedKey();
         }
 
-        public String getUpdatePolicy() {
-            return profileFeature.getUpdatePolicy().toString();
-        }
-
         private Profile.Feature.Type getType() {
             return profileFeature.getType();
         }
+
     }
+
 }

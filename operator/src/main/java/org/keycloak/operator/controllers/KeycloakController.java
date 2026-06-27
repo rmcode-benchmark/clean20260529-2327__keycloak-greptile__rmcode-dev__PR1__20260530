@@ -218,18 +218,14 @@ public class KeycloakController implements Reconciler<Keycloak> {
                 .ofNullable(existingDeployment.getMetadata().getAnnotations().get(Constants.KEYCLOAK_MIGRATING_ANNOTATION))
                 .map(Boolean::valueOf).orElse(false)) {
             status.addNotReadyMessage("Performing Keycloak update, scaling down the deployment");
-        } else if (isRolling(existingDeployment)) {
+        } else if (existingDeployment.getStatus() != null
+                && existingDeployment.getStatus().getCurrentRevision() != null
+                && existingDeployment.getStatus().getUpdateRevision() != null
+                && !existingDeployment.getStatus().getCurrentRevision().equals(existingDeployment.getStatus().getUpdateRevision())) {
             status.addRollingUpdateMessage("Rolling out deployment update");
         }
 
         distConfigurator.validateOptions(keycloakCR, status);
-    }
-
-    public static boolean isRolling(StatefulSet existingDeployment) {
-        return existingDeployment.getStatus() != null
-                && existingDeployment.getStatus().getCurrentRevision() != null
-                && existingDeployment.getStatus().getUpdateRevision() != null
-                && !existingDeployment.getStatus().getCurrentRevision().equals(existingDeployment.getStatus().getUpdateRevision());
     }
 
     public void validatePodTemplate(Keycloak keycloakCR, KeycloakStatusAggregator status) {

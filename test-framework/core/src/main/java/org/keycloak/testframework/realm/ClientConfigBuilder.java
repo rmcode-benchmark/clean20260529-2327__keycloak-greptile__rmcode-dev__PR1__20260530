@@ -5,6 +5,7 @@ import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ClientConfigBuilder {
@@ -126,22 +127,19 @@ public class ClientConfigBuilder {
     }
 
     public ClientConfigBuilder defaultClientScopes(String... defaultClientScopes) {
-        rep.setDefaultClientScopes(Collections.combine(rep.getDefaultClientScopes(), defaultClientScopes));
+        if (rep.getDefaultClientScopes() == null) {
+            rep.setDefaultClientScopes(new LinkedList<>());
+        }
+
+        rep.getDefaultClientScopes().addAll(List.of(defaultClientScopes));
         return this;
     }
 
     public ClientConfigBuilder protocolMappers(List<ProtocolMapperRepresentation> mappers) {
-        rep.setProtocolMappers(Collections.combine(rep.getProtocolMappers(), mappers));
-        return this;
-    }
-
-    public ClientConfigBuilder consentRequired(boolean enabled) {
-        rep.setConsentRequired(enabled);
-        return this;
-    }
-
-    public ClientConfigBuilder webOrigins(String... webOrigins) {
-        rep.setWebOrigins(Collections.combine(rep.getWebOrigins(), webOrigins));
+        if (rep.getProtocolMappers() == null) {
+            rep.setProtocolMappers(new LinkedList<>());
+        }
+        rep.getProtocolMappers().addAll(mappers);
         return this;
     }
 

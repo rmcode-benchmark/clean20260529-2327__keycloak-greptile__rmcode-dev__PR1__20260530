@@ -34,7 +34,7 @@ import static org.keycloak.provider.ProviderConfigProperty.STRING_TYPE;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public class TestComponentImplProviderFactory implements TestComponentProviderFactory {
+public class TestImplProviderFactory implements TestProviderFactory {
 
     private List<ProviderConfigProperty> config = ProviderConfigurationBuilder.create()
             .property("secret", "Secret", "A secret value", STRING_TYPE, null, null, true)
@@ -47,7 +47,7 @@ public class TestComponentImplProviderFactory implements TestComponentProviderFa
 
     @Override
     public Object create(KeycloakSession session, ComponentModel model) {
-        return new TestComponentImplProvider(model);
+        return new TestImplProvider(model);
     }
 
     @Override
@@ -81,14 +81,14 @@ public class TestComponentImplProviderFactory implements TestComponentProviderFa
 
     @Override
     public String getId() {
-        return "test-component";
+        return "test";
     }
 
-    public static class TestComponentImplProvider implements TestComponentProvider {
+    public static class TestImplProvider implements TestProvider {
 
         private ComponentModel model;
 
-        public TestComponentImplProvider(ComponentModel model) {
+        public TestImplProvider(ComponentModel model) {
             this.model = model;
         }
 

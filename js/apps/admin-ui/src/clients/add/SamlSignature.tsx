@@ -5,7 +5,6 @@ import { FormAccess } from "../../components/form/FormAccess";
 import { convertAttributeNameToForm } from "../../util";
 import { FormFields } from "../ClientDetails";
 import { Toggle } from "./SamlConfig";
-import { SamlEncryption } from "./SamlEncryption";
 
 export const SIGNATURE_ALGORITHMS = [
   "RSA_SHA1",
@@ -45,10 +44,6 @@ export const SamlSignature = () => {
     convertAttributeNameToForm<FormFields>(
       "attributes.saml.assertion.signature",
     ),
-  );
-  const samlEncryption = watch(
-    convertAttributeNameToForm<FormFields>("attributes.saml.encrypt"),
-    "false",
   );
 
   return (
@@ -101,7 +96,6 @@ export const SamlSignature = () => {
               value: name,
             }))}
           />
-          {samlEncryption === "true" && <SamlEncryption />}
         </>
       )}
     </FormAccess>

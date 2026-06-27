@@ -196,7 +196,13 @@ public class DefaultMigrationManager implements MigrationManager {
 
     @Override
     public void migrate(RealmModel realm, RealmRepresentation rep, boolean skipUserDependent) {
-        ModelVersion stored = getModelVersionFromRep(rep);
+        ModelVersion stored = null;
+        if (rep.getKeycloakVersion() != null) {
+            stored = convertRHSSOVersionToKeycloakVersion(rep.getKeycloakVersion());
+            if (stored == null) {
+                stored = new ModelVersion(rep.getKeycloakVersion());
+            }
+        }
         if (stored == null) {
             stored = migrations[0].getVersion();
         } else {
@@ -233,17 +239,6 @@ public class DefaultMigrationManager implements MigrationManager {
             return new ModelVersion(Integer.parseInt(version), 0, 0);
         }
         return null;
-    }
-
-    public static ModelVersion getModelVersionFromRep(RealmRepresentation rep) {
-        ModelVersion version = null;
-        if (rep.getKeycloakVersion() != null) {
-            version = convertRHSSOVersionToKeycloakVersion(rep.getKeycloakVersion());
-            if (version == null) {
-                version = new ModelVersion(rep.getKeycloakVersion());
-            }
-        }
-        return version;
     }
 
 }
