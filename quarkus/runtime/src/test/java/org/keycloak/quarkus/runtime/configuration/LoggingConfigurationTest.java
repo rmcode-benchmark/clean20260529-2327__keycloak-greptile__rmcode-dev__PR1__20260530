@@ -17,20 +17,22 @@
 
 package org.keycloak.quarkus.runtime.configuration;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.keycloak.config.LoggingOptions.DEFAULT_LOG_FORMAT;
 import static org.keycloak.config.LoggingOptions.DEFAULT_SYSLOG_OUTPUT;
+import static org.keycloak.config.LoggingOptions.SYSLOG_COUNTING_FRAMING_PROTOCOL_DEPENDENT;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import io.quarkus.runtime.logging.LogRuntimeConfig;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.keycloak.config.LoggingOptions;
@@ -85,7 +87,7 @@ public class LoggingConfigurationTest extends AbstractConfigurationTest {
                 "log-syslog-protocol", "tcp",
                 "log-syslog-format", DEFAULT_LOG_FORMAT,
                 "log-syslog-output", DEFAULT_SYSLOG_OUTPUT.toString(),
-                "log-syslog-counting-framing", "protocol-dependent"
+                "log-syslog-counting-framing", SYSLOG_COUNTING_FRAMING_PROTOCOL_DEPENDENT
         ));
         assertThat(Configuration.getOptionalKcValue(LoggingOptions.LOG_SYSLOG_MAX_LENGTH).orElse(null), CoreMatchers.nullValue());
 
@@ -95,7 +97,7 @@ public class LoggingConfigurationTest extends AbstractConfigurationTest {
                 "quarkus.log.syslog.syslog-type", "rfc5424",
                 "quarkus.log.syslog.app-name", "keycloak",
                 "quarkus.log.syslog.protocol", "tcp",
-                "quarkus.log.syslog.use-counting-framing", "protocol-dependent",
+                "quarkus.log.syslog.use-counting-framing", "true",
                 "quarkus.log.syslog.format", DEFAULT_LOG_FORMAT,
                 "quarkus.log.syslog.json.enabled", "false"
         ));
@@ -173,26 +175,34 @@ public class LoggingConfigurationTest extends AbstractConfigurationTest {
 
     @Test
     public void syslogCountingFraming() {
-        assertSyslogCountingFraming(LogRuntimeConfig.SyslogConfig.CountingFraming.TRUE);
-        assertSyslogCountingFraming(LogRuntimeConfig.SyslogConfig.CountingFraming.FALSE);
-        assertSyslogCountingFraming(LogRuntimeConfig.SyslogConfig.CountingFraming.PROTOCOL_DEPENDENT);
+        assertSyslogCountingFramingProtocolDependent("tcp", true);
+        assertSyslogCountingFramingProtocolDependent("udp", false);
+        assertSyslogCountingFramingProtocolDependent("ssl-tcp", true);
+        try {
+            assertSyslogCountingFramingProtocolDependent("error", false);
+            fail("Wrong protocol name should throw an error");
+        } catch (PropertyException expected) {
+            assertThat(expected.getMessage(), containsString("Invalid Syslog protocol: error"));
+        }
     }
 
-    protected void assertSyslogCountingFraming(LogRuntimeConfig.SyslogConfig.CountingFraming countingFraming) {
+    protected void assertSyslogCountingFramingProtocolDependent(String protocol, boolean expectedCountingFraming) {
         putEnvVars(Map.of(
                 "KC_LOG", "syslog",
-                "KC_LOG_SYSLOG_COUNTING_FRAMING", countingFraming.toString()
+                "KC_LOG_SYSLOG_PROTOCOL", protocol
         ));
 
         initConfig();
 
         assertConfig(Map.of(
                 "log-syslog-enabled", "true",
-                "log-syslog-counting-framing", countingFraming.toString()
+                "log-syslog-protocol", protocol,
+                "log-syslog-counting-framing", SYSLOG_COUNTING_FRAMING_PROTOCOL_DEPENDENT
         ));
         assertExternalConfig(Map.of(
                 "quarkus.log.syslog.enable", "true",
-                "quarkus.log.syslog.use-counting-framing", countingFraming.toString()
+                "quarkus.log.syslog.protocol", protocol,
+                "quarkus.log.syslog.use-counting-framing", Boolean.toString(expectedCountingFraming)
         ));
         onAfter();
     }

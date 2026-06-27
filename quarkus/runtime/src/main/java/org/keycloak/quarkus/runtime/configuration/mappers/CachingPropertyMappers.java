@@ -185,7 +185,7 @@ final class CachingPropertyMappers {
         return getOptionalKcValue(CachingOptions.CACHE_REMOTE_HOST_PROPERTY).isPresent();
     }
 
-    public static boolean cacheSetToInfinispan() {
+    private static boolean cacheSetToInfinispan() {
         if (InfinispanUtils.isRemoteInfinispan()) {
             return false;
         }

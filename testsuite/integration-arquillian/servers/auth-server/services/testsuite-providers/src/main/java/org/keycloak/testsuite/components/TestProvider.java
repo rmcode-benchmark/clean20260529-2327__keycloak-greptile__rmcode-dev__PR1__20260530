@@ -17,10 +17,28 @@
 
 package org.keycloak.testsuite.components;
 
-import org.keycloak.component.ComponentFactory;
+import org.keycloak.provider.Provider;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public interface TestComponentProviderFactory<T extends TestComponentProvider> extends ComponentFactory<T, TestComponentProvider> {
+public interface TestProvider extends Provider {
+
+    DetailsRepresentation getDetails();
+
+    class DetailsRepresentation {
+        Map<String, List<String>> config;
+
+        public Map<String, List<String>> getConfig() {
+            return config;
+        }
+
+        public void setConfig(Map<String, List<String>> config) {
+            this.config = config;
+        }
+    }
+
 }

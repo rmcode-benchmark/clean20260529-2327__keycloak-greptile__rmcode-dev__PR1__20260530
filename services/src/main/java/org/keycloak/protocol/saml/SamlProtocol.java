@@ -597,12 +597,14 @@ public class SamlProtocol implements LoginProtocol {
         }
 
         if (samlClient.requiresEncryption()) {
+            PublicKey publicKey = null;
             try {
-                SamlProtocolUtils.setupEncryption(samlClient, bindingBuilder);
+                publicKey = SamlProtocolUtils.getEncryptionKey(client);
             } catch (Exception e) {
                 logger.error("failed", e);
                 return ErrorPage.error(session, null, Response.Status.BAD_REQUEST, Messages.FAILED_TO_PROCESS_RESPONSE);
             }
+            bindingBuilder.encrypt(publicKey);
         }
         try {
             samlDocument = builder.buildDocument(samlModel);

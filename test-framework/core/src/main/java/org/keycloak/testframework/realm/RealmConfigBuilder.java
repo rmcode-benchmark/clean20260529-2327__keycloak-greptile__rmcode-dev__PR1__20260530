@@ -2,7 +2,6 @@ package org.keycloak.testframework.realm;
 
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
-import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RolesRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -218,11 +217,6 @@ public class RealmConfigBuilder {
 
     public RealmConfigBuilder sslRequired(String sslRequired) {
         rep.setSslRequired(sslRequired);
-        return this;
-    }
-
-    public RealmConfigBuilder identityProvider(IdentityProviderRepresentation identityProvider) {
-        rep.addIdentityProvider(identityProvider);
         return this;
     }
 

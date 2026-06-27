@@ -18,7 +18,6 @@
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import org.keycloak.common.Profile;
-import org.keycloak.config.TracingOptions;
 import org.keycloak.quarkus.runtime.cli.PropertyException;
 import org.keycloak.quarkus.runtime.configuration.Configuration;
 import org.keycloak.utils.StringUtil;
@@ -30,7 +29,6 @@ import java.net.URL;
 import static org.keycloak.config.TracingOptions.TRACING_COMPRESSION;
 import static org.keycloak.config.TracingOptions.TRACING_ENABLED;
 import static org.keycloak.config.TracingOptions.TRACING_ENDPOINT;
-import static org.keycloak.config.TracingOptions.TRACING_INFINISPAN_ENABLED;
 import static org.keycloak.config.TracingOptions.TRACING_JDBC_ENABLED;
 import static org.keycloak.config.TracingOptions.TRACING_PROTOCOL;
 import static org.keycloak.config.TracingOptions.TRACING_RESOURCE_ATTRIBUTES;
@@ -93,11 +91,6 @@ public class TracingPropertyMappers {
                         .mapFrom(TRACING_ENABLED)
                         .isEnabled(TracingPropertyMappers::isTracingEnabled, TRACING_ENABLED_MSG)
                         .to("quarkus.datasource.jdbc.telemetry")
-                        .build(),
-                fromOption(TRACING_INFINISPAN_ENABLED)
-                        .mapFrom(TracingOptions.TRACING_ENABLED)
-                        .to("kc.spi-cache-embedded--default--tracing-enabled")
-                        .isEnabled(TracingPropertyMappers::isTracingAndEmbeddedInfinispanEnabled, "tracing and embedded Infinispan is enabled")
                         .build()
         };
     }
@@ -136,8 +129,8 @@ public class TracingPropertyMappers {
         return Configuration.isTrue(TRACING_ENABLED);
     }
 
-    public static boolean isTracingAndEmbeddedInfinispanEnabled() {
-        return Configuration.isTrue(TRACING_ENABLED) && CachingPropertyMappers.cacheSetToInfinispan();
+    public static boolean isTracingJdbcEnabled() {
+        return Configuration.isTrue(TRACING_JDBC_ENABLED);
     }
 
     private static boolean isValidUrl(String url) {

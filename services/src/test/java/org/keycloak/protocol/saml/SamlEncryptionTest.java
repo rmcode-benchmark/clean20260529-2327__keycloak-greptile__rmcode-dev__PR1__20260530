@@ -178,12 +178,7 @@ public class SamlEncryptionTest {
 
     @Test
     public void testAES256() throws Exception {
-        testEncryption(rsaKeyPair, XMLCipher.AES_256, -1, null, null, null);
-    }
-
-    @Test
-    public void testAES256GCM() throws Exception {
-        testEncryption(rsaKeyPair, XMLCipher.AES_256_GCM, -1, null, null, null);
+        testEncryption(rsaKeyPair, "AES", 256, null, null, null);
     }
 
     @Test

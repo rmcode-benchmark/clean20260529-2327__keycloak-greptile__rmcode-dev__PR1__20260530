@@ -26,6 +26,7 @@ import org.keycloak.representations.idm.AdminEventRepresentation;
 import org.keycloak.representations.idm.AuthenticationFlowRepresentation;
 import org.keycloak.representations.idm.EventRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.testsuite.components.TestProvider;
 import org.keycloak.testsuite.rest.representation.AuthenticatorState;
 import org.keycloak.utils.MediaType;
 
@@ -258,6 +259,11 @@ public interface TestingResource {
 
     @Path("export-import")
     TestingExportImportResource exportImport();
+
+    @GET
+    @Path("/test-component")
+    @Produces(MediaType.APPLICATION_JSON)
+    Map<String, TestProvider.DetailsRepresentation> getTestComponentDetails();
 
     @GET
     @Path("/test-amphibian-component")

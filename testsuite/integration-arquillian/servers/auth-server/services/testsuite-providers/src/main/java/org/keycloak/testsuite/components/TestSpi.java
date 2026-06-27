@@ -18,27 +18,30 @@
 package org.keycloak.testsuite.components;
 
 import org.keycloak.provider.Provider;
-
-import java.util.List;
-import java.util.Map;
+import org.keycloak.provider.ProviderFactory;
+import org.keycloak.provider.Spi;
 
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public interface TestComponentProvider extends Provider {
-
-    DetailsRepresentation getDetails();
-
-    class DetailsRepresentation {
-        Map<String, List<String>> config;
-
-        public Map<String, List<String>> getConfig() {
-            return config;
-        }
-
-        public void setConfig(Map<String, List<String>> config) {
-            this.config = config;
-        }
+public class TestSpi implements Spi {
+    @Override
+    public boolean isInternal() {
+        return false;
     }
 
+    @Override
+    public String getName() {
+        return "test";
+    }
+
+    @Override
+    public Class<? extends Provider> getProviderClass() {
+        return TestProvider.class;
+    }
+
+    @Override
+    public Class<? extends ProviderFactory> getProviderFactoryClass() {
+        return TestProviderFactory.class;
+    }
 }
