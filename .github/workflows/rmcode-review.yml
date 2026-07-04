@@ -139,6 +139,7 @@ jobs:
           REPOMAP_MAX_CHARS: "80000"
           RMCODE_EXTRACTOR_VERSION: "${{ inputs.version }}"
           RMCODE_EXTRACTOR_SHA256: "${{ inputs.extractor_sha256 }}"
+          PR_TITLE: "${{ inputs.pr_title }}"
         run: |
           if [ -z "${RMCODE_WORKFLOW_SHA256:-}" ] && [ -f .github/workflows/rmcode-review.yml ]; then
             export RMCODE_WORKFLOW_SHA256="$(sha256sum .github/workflows/rmcode-review.yml | awk '{print $1}')"
@@ -147,7 +148,7 @@ jobs:
             --pr="${{ inputs.pr_number }}" \
             --diff-file="$RUNNER_TEMP/rmcode-pr.diff" \
             --base-sha="$RMCODE_CONTEXT_BASE_SHA" \
-            --pr-title="${{ inputs.pr_title }}" \
+            --pr-title="$PR_TITLE" \
             --callback="${{ inputs.callback_url }}" \
             --token="${{ inputs.auth_token }}" \
             --source-repo="${{ inputs.source_repository || github.repository }}" \
